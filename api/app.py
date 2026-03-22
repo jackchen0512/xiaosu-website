@@ -129,7 +129,7 @@ def add_comment():
         name = name[:50]
 
     # 简单的内容过滤
-    forbidden_words = ['广告', '加微信', '代写', '']
+    forbidden_words = ['广告', '加微信', '代写']
     for word in forbidden_words:
         if word in content:
             return {
