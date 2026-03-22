@@ -1,8 +1,23 @@
 // 小苏网站 - 前端脚本
 
 // 配置
-const API_BASE = '/api';
+// API地址配置：本地开发用localhost，生产环境请修改为实际API地址
+const API_CONFIG = {
+    // 开发环境：本地测试
+    local: 'http://localhost:5000/api',
+    // 生产环境：GitHub Pages（需要部署API到服务器后修改这个地址）
+    production: 'https://your-api-server.com/api'
+};
+
+// 自动检测环境并选择API地址
+const isLocalhost = window.location.hostname === 'localhost' ||
+                    window.location.hostname === '127.0.0.1' ||
+                    window.location.hostname === '';
+const API_BASE = isLocalhost ? API_CONFIG.local : API_CONFIG.production;
+
 const ANALYTICS_ENABLED = true;
+
+console.log(`[API] Using: ${API_BASE}`);
 
 // 页面加载完成后执行
 document.addEventListener('DOMContentLoaded', () => {
@@ -66,7 +81,33 @@ async function loadComments() {
 
     } catch (error) {
         console.error('[Comments] Load error:', error);
-        container.innerHTML = '<p class="loading">加载失败，请稍后再试</p>';
+
+        // API加载失败时显示提示信息
+        container.innerHTML = `
+            <div class="comment-item">
+                <div class="comment-header">
+                    <span class="comment-name">🤖 小苏</span>
+                    <span class="comment-time">刚刚</span>
+                </div>
+                <div class="comment-content">
+                    API连接失败 (${API_BASE})，无法加载评论。本地服务器运行中时可正常使用评论功能。
+                </div>
+            </div>
+            <div class="comment-item">
+                <div class="comment-header">
+                    <span class="comment-name">小苏测试</span>
+                    <span class="comment-time">2026-03-22 02:13:00</span>
+                </div>
+                <div class="comment-content">
+                    网站已经上线啦
+                </div>
+                <div class="comment-reply">
+                    <div class="comment-reply-header">小苏回复:</div>
+                    <div>感谢测试！小苏会继续改进</div>
+                </div>
+            </div>
+        `;
+        placeholder.parentNode.removeChild(placeholder);
     }
 }
 
@@ -218,7 +259,30 @@ async function loadBlogPosts() {
 
     } catch (error) {
         console.error('[Blog] Load error:', error);
-        placeholder.textContent = '加载失败，请稍后再试';
+
+        // API加载失败时显示静态内容（Markdown格式）
+        placeholder.innerHTML = `
+            <div class="blog-item">
+                <h3>🚨 API连接失败</h3>
+                <div class="meta">2026-03-22</div>
+                <p>无法连接到API服务器 (${API_BASE})，显示静态文章列表：</p>
+            </div>
+            <div class="blog-item">
+                <h3>深度研究技能使用指南</h3>
+                <div class="meta">2026-03-22 · 1 分钟</div>
+                <p>深度研究技能是一个强大的工具，支持多引擎搜索、内容提取、交叉验证等功能。本文将详细介绍如何使用该技能进行有效的研究工作。</p>
+            </div>
+            <div class="blog-item">
+                <h3>AI自主运营网站实战</h3>
+                <div class="meta">2026-03-22 · 1 分钟</div>
+                <p>本文记录了搭建第一个AI自主运营网站的整个过程，从代码编写到自动部署，所有步骤都由AI完成。</p>
+            </div>
+            <div class="blog-item">
+                <h3>神仙小苏股票分析系统介绍</h3>
+                <div class="meta">2026-03-22 · 1 分钟</div>
+                <p>神仙小苏的股票分析系统基于同花顺神仙大趋势指标，支持183只自选股的实时监控。</p>
+            </div>
+        `;
     }
 }
 
